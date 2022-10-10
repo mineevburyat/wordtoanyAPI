@@ -12,6 +12,16 @@ fastapi_description = '''
 Состоит из следующих частей:
  * общая часть - отображает параметры и текущее состояние микросервиса, 
    имеет подключаемый логгер со своими настройками
+ * операции с числами и числительными - необходимые операции, которые необходимо выполнить после 
+   распознования речи человека содержащие числительные
+ * операции с временем - необходимые операции, которые необходимо выполнить после 
+   распознования речи человека содержащие время, часть суток и пр.
+ * операции с датами - необходимые операции, которые необходимо выполнить после 
+   распознования речи человека содержащие даты
+ * операции с адресами - необходимые операции, которые необходимо выполнить после 
+   распознования речи человека содержащие описательные признаки адреса в зависимости от особенностей региона
+ * операции с услугами - необходимые операции, которые необходимо выполнить после 
+   распознования речи человека содержащие описательные признаки услуги.
 
 '''
 
@@ -73,14 +83,31 @@ tags_metadata = [
         "description": "Состояние и параметры сервиса fastAPI",
     },
     {
-        "name": "mw",
-        "description": "Состояние и параметры MiddleWare. Установка параметров связи со службой InfoWatch.",
-        "externalDocs": {
-            "description": "Thrift IDL MiddleEWare схема",
-            "url": "https://fastapi.tiangolo.com/",
-        }
+        "name": "number_manipulation",
+        "description": "Утилиты для работы с числителями",
+        # "externalDocs": {
+        #     "description": "Thrift IDL MiddleEWare схема",
+        #     "url": "https://fastapi.tiangolo.com/",
+        # }
     },
-    
+    {
+        "name": "time_manipulation",
+        "description": "Утилиты для работы с временем",
+    },
+    {
+        "name": "date_manipulation",
+        "description": "Утилиты для работы с датами",
+    },
+    {
+        "name": "address_search",
+        "description": """Утилиты для поиска необходимого офиса или места
+        по произвольному сообщению человека, исходя из особенностей региона""",
+    },
+    {
+        "name": "service_search",
+        "description": """Утилиты для поиска необходимого сервиса или услуги
+        по произвольному сообщению человека, исходя из особенностей региона""",
+    },
 ]
 try:
     settings = get_settings()
@@ -132,6 +159,101 @@ def log_config(
         logger_drv.debug(get_log_str(request, 'log_config', log_conf))
     return log_conf
 
+############################# УТИЛИТЫ ################################################
+
+# числительные
+@app.get('/util/number', tags=['number_manipulation'], response_model=LogSettings)
+def word_to_number(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Преобразовать строку содержащие  числительные в список обнаруженых чисел'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+# время
+@app.get('/util/time/partday', tags=['time_manipulation'], response_model=LogSettings)
+def word_to_partday(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Преобразовать строку содержащее названое человеком часть суток в временной промежуток'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+@app.get('/util/time/time', tags=['time_manipulation'], response_model=LogSettings)
+def word_to_time(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Преобразовать строку содержащее названое человеком время в часы и минуты'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+# дата
+@app.get('/util/date/date', tags=['date_manipulation'], response_model=LogSettings)
+def word_to_date(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Преобразовать строку содержащее названое человеком дату в день, месяц, год с учетом перехода между месяцами и годами'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+# адрес
+@app.get('/util/address/namespace', tags=['address_search'], response_model=LogSettings)
+def has_address_namespace(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Показать имеющиеся в базе пространства имен для различных регионов.'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+@app.post('/util/address/namespace', tags=['address_search'], response_model=LogSettings)
+def add_address_namespace(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Добавить новый регион с особенностями описания адресов'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+@app.post('/util/address/namespace/{space}', tags=['address_search'], response_model=LogSettings)
+def add_address_sign(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Добавить в регион новый описательный признак адреса'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+@app.get('/util/address/search', tags=['address_search'], response_model=LogSettings)
+def search_address(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Поиск конкретного адреса по названному человеком описательным признакам'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+# услуга
+@app.get('/util/service/namespace', tags=['service_search'], response_model=LogSettings)
+def has_service_namespace(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Показать имеющиеся в базе пространства имен услуг для различных регионов.'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
+
+@app.get('/util/service/search', tags=['service_search'], response_model=LogSettings)
+def search_service(
+    request: Request, 
+    log_conf: LogSettings = Depends(get_log_conf)):
+    '''Поиск конкретной услуги по названному человеком описательным признакам'''
+    if settings.log_driver and logger_drv:
+        logger_drv.debug(get_log_str(request, 'log_config', log_conf))
+    return log_conf
 
 if __name__ == "__main__":
     uvicorn.run(
