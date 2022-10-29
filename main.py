@@ -162,6 +162,10 @@ def log_config(
 ############################# УТИЛИТЫ ################################################
 
 # числительные
+# {
+#   "utterance": "сто тридцат шеcть двадцать пять и восемьдесят девить",
+#   "only_numbers": 0
+# }
 @app.get('/util/number', tags=['number_manipulation'], response_model=LogSettings)
 def word_to_number(
     request: Request, 
